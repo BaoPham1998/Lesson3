@@ -1,0 +1,19 @@
+services:
+  mysql:
+    # ----------MySQLに関する設定----------
+    image: mysql:5.7 # MySQLのバージョン
+    platform: linux/amd64 # サーバーのOS
+    container_name: Paiza_MySQL_Container # コンテナの名前
+    command: > # 起動時に設定ファイルの書き込み権限を削除するコマンド
+      bash -c " chmod a-w /etc/mysql/conf.d/*.cnf && /entrypoint.sh mysqld "
+    ports:
+      - "3306:3306" # PCのポート番号:コンテナのポート番号
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # rootアカウントのパスワード省略を許可
+      MYSQL_DATABASE: mydb # データベース名
+      TZ: "Asia/Tokyo" # タイムゾーン
+      LANG: C.utf8 # ロケール
+    volumes:
+      # コンテナ内に指定のファイル、フォルダを接続
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d # SQLの初期データ
+      - ./mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf # MySQLの設定ファイル
